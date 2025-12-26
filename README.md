@@ -49,9 +49,8 @@ The strategy is "Market Neutral," meaning it bets on the relative performance of
    * Longs: The top 100 stocks with the highest scores.
    * Shorts: The bottom 100 stocks with the lowest scores.
  * Weighting:
-   * Each Long position = +0.5% of portfolio (when 100 positions)
-   * Each Short position = -0.5% of portfolio (when 100 positions)
-   * Actual weight = 0.5 / min(TOP_N, available_stocks/2)
+   * Each Long position = +0.5% of portfolio
+   * Each Short position = -0.5% of portfolio
  * Exposure:
    * Gross Exposure = 100% (50% Long + 50% Short)
    * Net Exposure = 0% (Market Neutral)
@@ -60,16 +59,6 @@ Trailing Stop-Loss
 Each position tracks its "Extreme Price" (the highest price since buying for longs, or the lowest for shorts).
  * Initial Stop: 20% loss from the entry price.
  * Profit Trigger: Once a position gains 20%, a trailing stop is activated.
- * Exit: If the trailing stop is active, the position is closed if it drops 10% from its Extreme Price for longs, or rises 10% from its Extreme Price for shorts.
+ * Exit: If the trailing stop is active, the position is closed if it drops 10% from its Extreme Price.
 Portfolio Value Tracking
 New_Portfolio_Value = Old_Value * (1 + sum(Position_Return * Position_Weight))
-
-6. Simulation Parameters
- * Stock Universe: S&P 500 (limited to DEV_STOCK_LIMIT = 500 for development)
- * Portfolio Size: TOP_N = 100 Longs and 100 Shorts
- * Initial Capital: $1,000,000
- * Backtest Start Date: October 8, 2025
- * Data Frequency: Weekly
- * Economic Indicators: Federal Funds Rate (FEDFUNDS) and Fed Balance Sheet (WALCL)
- * Fallback: Synthetic data generated when FRED API key is unavailable
-
