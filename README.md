@@ -1,49 +1,65 @@
 # Defiant-Fed-Policy-Investment-Strategy
 
 Quantitative Methodology: Regime-Based Factor Rotation
-This document outlines the formal mathematical framework used to categorize economic environments, evaluate stock performance, and manage risk within the S&P 500 Regime Strategy.
+This document outlines the formal logic used to categorize economic environments, evaluate stock performance, and manage risk within the S&P 500 Regime Strategy.
 1. Economic Regime Classification
-The strategy identifies market cycles by comparing current macroeconomic indicators against their historical averages via Simple Moving Averages (SMA).
+The strategy identifies market cycles by comparing current macroeconomic indicators against their historical averages (Simple Moving Averages).
 Indicator Definitions
-Let IR_t be the Effective Federal Funds Rate and BS_t be the Federal Reserve Total Assets (Balance Sheet) at time t.
-1. Rate Trend (T_{IR}) Determined by a 26-week (6-month) SMA:
-2. Liquidity Trend (T_{BS}) Determined by a 52-week (1-year) SMA:
+ * IR: Effective Federal Funds Rate
+ * BS: Federal Reserve Total Assets (Balance Sheet)
+ * SMA_26: 26-week (6-month) Simple Moving Average
+ * SMA_52: 52-week (1-year) Simple Moving Average
+1. Rate Trend (T_IR)
+If Current_IR > SMA_26(IR): 
+    Rate Trend = HIGH
+Else: 
+    Rate Trend = LOW
+
+2. Liquidity Trend (T_BS)
+If Current_BS > SMA_52(BS): 
+    Liquidity Trend = EXPANSION
+Else: 
+    Liquidity Trend = CONTRACTION
+
 Regime Matrix
-The interaction of these two binary states defines the four specific strategy regimes:
-| Regime | Rate Trend | Liquidity Trend | Economic Context | Primary Factor Focus |
+| Regime | Rate Trend | Liquidity Trend | Economic Context | Factor Focus |
 |---|---|---|---|---|
-| A | Low | Expansion | Liquidity Injection / "Easy Money" | Growth (Z_g) |
-| B | Low | Contraction | Transition / Neutral | Balanced (Z_g + Z_p) |
-| C | High | Expansion | Inflationary / Overheating | Balanced (Z_g + Z_p) |
-| D | High | Contraction | Tightening / "Risk-Off" | Profitability (Z_p) |
-2. Factor Normalization (Cross-Sectional Z-Scores)
-To ensure that disparate units (percentages for growth vs. ratios for profit) are mathematically comparable, we apply cross-sectional Z-score normalization across the universe U.
-For a specific attribute x (e.g., Revenue Growth) of stock i:
-Where:
- * \mu_x = \frac{1}{|U|} \sum_{j \in U} x_j (Universe Mean)
- * \sigma_x = \sqrt{\frac{1}{|U|} \sum_{j \in U} (x_j - \mu_x)^2} (Universe Standard Deviation)
+| A | LOW | EXPANSION | Easy Money / High Liquidity | Growth (Z_g) |
+| B | LOW | CONTRACTION | Transition / Neutral | Balanced |
+| C | HIGH | EXPANSION | Inflationary / Overheating | Balanced |
+| D | HIGH | CONTRACTION | Tightening / Risk-Off | Profitability (Z_p) |
+2. Factor Normalization (Z-Scores)
+To compare different metrics (like % growth vs profit margins), we use cross-sectional Z-scores. This measures how many standard deviations a stock is from the S&P 500 average.
+Z_score = (Stock_Value - Universe_Average) / Universe_Standard_Deviation
+
+ * Z_g: Normalized Revenue Growth Score
+ * Z_p: Normalized Profitability/Quality Score
 3. Factor Scoring Engine
-The final score S_i for each security is a weighted combination of its Growth Score (Z_{i,g}) and Profitability Score (Z_{i,p}):
-Regime-Dependent Weighting (w)
-The weights shift to prioritize specific corporate characteristics based on the identified macro regime:
- * Regime A: w_g = 1.0, w_p = 0.0
- * Regime D: w_g = 0.0, w_p = 1.0
- * Regimes B & C: w_g = 0.5, w_p = 0.5
+The final score for each stock determines its rank in the portfolio.
+Final_Score = (Weight_g * Z_g) + (Weight_p * Z_p)
+
+Regime Weights
+The strategy rotates what it values based on the regime:
+ * Regime A: Weight_g = 1.0, Weight_p = 0.0 (Growth focus)
+ * Regime D: Weight_g = 0.0, Weight_p = 1.0 (Profit focus)
+ * Regimes B & C: Weight_g = 0.5, Weight_p = 0.5 (Balanced focus)
 4. Portfolio Construction
-The strategy maintains a Market Neutral posture through a Long/Short structure to isolate factor returns from broad market direction.
- * Selection Logic:
-   *    *  * Weighting Schema:
-   * For each stock j in Long basket L, weight w_j = \frac{0.5}{N}
-   * For each stock j in Short basket S, weight w_j = -\frac{0.5}{N}
- * Exposure Profile:
-   * Gross Exposure: \sum |w_j| = 1.0 (100%)
-   * Net Exposure: \sum w_j = 0.0 (0%)
-5. Risk and Return Attribution
-Individual Position Return (R_j)
- * Long Positions: R_j = \frac{P_{current} - P_{entry}}{P_{entry}}
- * Short Positions: R_j = \frac{P_{entry} - P_{current}}{P_{entry}}
-Trailing Stop-Loss (SL)
-The strategy tracks the "Extreme Price" (P_{ext}), defined as the peak for longs or trough for shorts.
- * Profit Threshold: Trailing stop activates when R_j > 20\%.
- * Exit Condition: If active, exit the position if P_{current} retraces 10\% from P_{ext}.
-Portfolio Value Tracking (V_t)
+The strategy is "Market Neutral," meaning it bets on the relative performance of stocks rather than the direction of the overall market.
+ * Selection:
+   * Longs: The top 100 stocks with the highest scores.
+   * Shorts: The bottom 100 stocks with the lowest scores.
+ * Weighting:
+   * Each Long position = +0.5% of portfolio
+   * Each Short position = -0.5% of portfolio
+ * Exposure:
+   * Gross Exposure = 100% (50% Long + 50% Short)
+   * Net Exposure = 0% (Market Neutral)
+5. Risk Management
+Trailing Stop-Loss
+Each position tracks its "Extreme Price" (the highest price since buying for longs, or the lowest for shorts).
+ * Initial Stop: 20% loss from the entry price.
+ * Profit Trigger: Once a position gains 20%, a trailing stop is activated.
+ * Exit: If the trailing stop is active, the position is closed if it drops 10% from its Extreme Price.
+Portfolio Value Tracking
+New_Portfolio_Value = Old_Value * (1 + sum(Position_Return * Position_Weight))
+
