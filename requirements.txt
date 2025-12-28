@@ -1,8 +1,7 @@
 # Dependencies for Defiant-Fed-Policy-Investment-Strategy
-# Generated based on current implementation in app.py
+# Based on current implementation in app.py
 
 Flask
 pandas
-yfinance
 requests
 numpy
