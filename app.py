@@ -129,7 +129,12 @@ class StockEngine:
         try:
             headers = {"User-Agent": "Mozilla/5.0"}
             response = requests.get(url, headers=headers)
-            tables = pd.read_html(StringIO(response.text))
+            # Try multiple parsers to handle missing lxml dependency
+            try:
+                tables = pd.read_html(StringIO(response.text))
+            except ImportError:
+                # Fallback to html5lib if lxml is not installed
+                tables = pd.read_html(StringIO(response.text), flavor='html5lib')
             tickers = [t.replace('.', '-') for t in tables[0]['Symbol'].tolist()]
             return tickers
         except Exception as e:
