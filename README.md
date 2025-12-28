@@ -67,4 +67,5 @@ python app.py
  * Data Latency: The system fetches data once upon startup (triggered by threading). It does not re-run the analysis automatically on a schedule. To refresh data, the application must be restarted.
  * Rate Limiting: The StockEngine enforces a strict 1-second sleep between requests. While this ensures compliance with free-tier API limits, it significantly slows down report generation.
  * Memory Persistence: Global state is held in memory. If the application crashes or restarts, historical analysis is lost.
+
 Disclaimer: This software is for educational and research purposes only. It does not constitute financial advice, and the "Regime" logic is a simplified heuristic model.
