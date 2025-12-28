@@ -1,3 +1,6 @@
+Live: [Go to link]([https://www.google.com](https://defiant-fed-investing.up.railway.app/))
+
+
 Quantitative Regime Analysis Engine
 1. System Overview
 This application functions as an automated quantitative research assistant. It dynamically assesses the current US macroeconomic environment ("Regime") using Federal Reserve data and applies a regime-congruent factor scoring model to the S&P 500 equity universe.
